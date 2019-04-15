@@ -464,7 +464,7 @@ class ChallengeEvaluator(object):
         blackboard.set('master_scenario_command', 'scenarios_running')
 
         return MasterScenario(self.world, self.ego_vehicle, master_scenario_configuration,
-                              timeout=timeout, debug_mode=self.debug>0)
+                              timeout=timeout, debug_mode=self.debug>1)
 
     def build_background_scenario(self, town_name, timeout=300):
         scenario_configuration = ScenarioConfiguration()
@@ -491,7 +491,7 @@ class ChallengeEvaluator(object):
         scenario_configuration.other_actors = [actor_configuration_instance]
 
         return BackgroundActivity(self.world, self.ego_vehicle, scenario_configuration,
-                                  timeout=timeout, debug_mode=self.debug>0)
+                                  timeout=timeout, debug_mode=self.debug>1)
 
     def build_trafficlight_scenario(self, town_name, timeout=300):
         scenario_configuration = ScenarioConfiguration()
@@ -499,7 +499,7 @@ class ChallengeEvaluator(object):
         scenario_configuration.town = town_name
 
         return TrafficLightScenario(self.world, self.ego_vehicle, scenario_configuration,
-                                    timeout=timeout, debug_mode=self.debug>0)
+                                    timeout=timeout, debug_mode=self.debug>1)
 
     def build_scenario_instances(self, scenario_definition_vec, town_name, timeout=300):
         """
@@ -1082,6 +1082,8 @@ class ChallengeEvaluator(object):
                     self._current_route_broke = False
                     self.load_environment_and_run(args, world_annotations, route_description)
                 except:
+                    import traceback
+                    traceback.print_exc()
                     if self._system_error:
                         sys.exit(-1)
                     self._current_route_broke = True
@@ -1150,7 +1152,6 @@ if __name__ == '__main__':
         print("Error. ROOT_SCENARIO_RUNNER not found. Please run setup_environment.sh first.")
         sys.exit(0)
 
-
     if ARGUMENTS.scenarios is None:
         print("Please specify a path to a scenario specification file  '--scenarios path-to-file'\n\n")
         PARSER.print_help(sys.stdout)
@@ -1162,6 +1163,9 @@ if __name__ == '__main__':
         challenge_evaluator = ChallengeEvaluator(ARGUMENTS)
         challenge_evaluator.run(ARGUMENTS)
     except:
+        import traceback
+
+        traceback.print_exc()
         challenge_evaluator.report_challenge_statistics(ARGUMENTS.filename, ARGUMENTS.show_to_participant)
     finally:
         del challenge_evaluator
